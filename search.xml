@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+    
+    <entry>
+      <title><![CDATA[建站小记]]></title>
+      <url>https://alansay.com/2016/07/27/%E5%BB%BA%E7%AB%99%E5%B0%8F%E8%AE%B0/</url>
+      <content type="html"><![CDATA[<h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>嗯，之前博客一直是使用的<a href="https://jekyllrb.com/" target="_blank" rel="external">jekyll</a>生成的静态博客，然后服务区的博客和nginx莫名其妙挂掉了，好多配置也没有做备份，再说原来的博客也没有写什么有价值的东西，决定重新搭建博客服务区，随便重新选用了<a href="https://hexo.io/" target="_blank" rel="external">hexo</a>，毕竟感觉js的发展更迅速，搭建起来因该资料会多一点。</p>
+<h2 id="服务器搭建"><a href="#服务器搭建" class="headerlink" title="服务器搭建"></a>服务器搭建</h2><p>既然决定重新搭建，在aliyun上的服务器系统干脆也重新选用了新的CentOS 7.2。</p>
+<h3 id="一、新建用户"><a href="#一、新建用户" class="headerlink" title="一、新建用户"></a>一、新建用户</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">adduser &lt;username&gt;	//添加用户</div><div class="line">passwd &lt;username&gt;	//设置密码</div><div class="line">gpasswd -a &lt;username&gt; wheel //添加到wheel用户组，有sudo权限</div></pre></td></tr></table></figure>
+<h3 id="二、设置SSH免密码登录"><a href="#二、设置SSH免密码登录" class="headerlink" title="二、设置SSH免密码登录"></a>二、设置SSH免密码登录</h3><p>服务器配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ssh-keygen -t rsa -b 4096 -C &quot;your_email@example.com&quot;</div><div class="line">//将生成的公私复制到服务器端 需要登录的用户 ~/.ssh/authorized_keys文件中</div><div class="line">//.ssh文件夹需要设置700权限</div><div class="line">//authorized_keys文件需要设置600权限</div><div class="line">service sshd restart	//重启服务器sshd服务</div></pre></td></tr></table></figure>
+<p>本地配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">HOST &lt;HOST&gt;				//主机名，也是使用时的名称</div><div class="line">HostName &lt;HostName&gt;		//主机地址，IP地址</div><div class="line">User &lt;User&gt;				//登录的用户名</div><div class="line">IdentityFile &lt;IdentityFile&gt;	//生成的密匙文件路径</div></pre></td></tr></table></figure>
+<h3 id="三、安装配置nginx-使用https"><a href="#三、安装配置nginx-使用https" class="headerlink" title="三、安装配置nginx,使用https"></a>三、安装配置nginx,使用https</h3><p>安装nginx：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo yum install nginx	//直接安装nginx</div></pre></td></tr></table></figure>
+<p>安装<a href="https://certbot.eff.org/" target="_blank" rel="external">Certbot</a>，因为安装方式经常在变动，直接查看文档中的GetStart，安装并且生成域名的相关证书。<br>nginx的相关<a href="https://github.com/tomjoy1947/Server/blob/master/nginx/nginx.conf" target="_blank" rel="external">配置文件</a>放在Github上。</p>
+<p>关于nginx的坑，在搭建的过程中，试了好多次都不能从外网正常的访问到网站一直是连接被拒绝，但在本地直接使用wget命令能正常获取到数据，猜测是防火墙的原因，发现关闭了之后就可以使用了，其实应该开启相应的端口就行了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">systemctl stop firewalld.service #停止firewall</div><div class="line">systemctl disable firewalld.service #禁止firewall开机启动</div></pre></td></tr></table></figure>
+<p>嗯，至此服务器端的配置就算是基本完成了。<br>下面就是hexo的相关配置了。</p>
+<h2 id="hexo配置"><a href="#hexo配置" class="headerlink" title="hexo配置"></a>hexo配置</h2><p>选了好久的hexo主题，最终觉得<a href="http://moxfive.xyz/" target="_blank" rel="external">MOxFIVE童鞋</a>的<a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" rel="external">Yelee</a>主题很不错，文档也很齐全，直接参照相关的文档照自己的需求配置就好了。<br>然后使用hexo的deploy部署到服务器上，博客就算是搭建好了。</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>aliyun的服务器似乎越来越坑了，也会莫名挂掉了，越来越多的服务也开始收费了。看了<a href="https://www.digitalocean.com/" target="_blank" rel="external">digitalocean</a>和<a href="https://www.linode.com/" target="_blank" rel="external">Linode</a>的服务器，很有竞争力啊，价格差不多，配置还是SSD硬盘，感觉年底服务器到期了可以尝试一下这两个服务器，毕竟<a href="https://onevcat.com/" target="_blank" rel="external">onevat</a>博客的服务器访问速度感觉也很不错啊。<br>买了<a href="http://zh.mweb.im/" target="_blank" rel="external">MWeb</a>编写MarkDown的软件(确实很好用哦)，难免激起了写博客的欲望，其实这段时间工作很忙，也学了不少动画、新特性的知识，争取每周末都能整理出一份能够分享的文档吧。也算是在学习和备忘吧。</p>
+<h2 id="2016-12-18更新"><a href="#2016-12-18更新" class="headerlink" title="2016-12-18更新"></a>2016-12-18更新</h2><p>连续加了两个月的班，终于有时间更新自己的博客了。</p>
+<h4 id="关于服务器选择"><a href="#关于服务器选择" class="headerlink" title="关于服务器选择"></a>关于服务器选择</h4><p>正好最近服务器快到期了，期间也尝试了<a href="https://www.digitalocean.com/" target="_blank" rel="external">digitalocean</a>的服务器，还是不太适合国内使用，经常性的连接超时，管理起来还是不太方便。对比了阿里云和腾讯云的服务，最后还是选择了升级原有的阿里云配置，还有续费3年5折的优惠。</p>
+<h4 id="关于服务器防火墙"><a href="#关于服务器防火墙" class="headerlink" title="关于服务器防火墙"></a>关于服务器防火墙</h4><p>之前写的直接关闭防火墙还是不太建议的，趁这次服务器续费从新查了相关知识还是直接放过要使用的端口数据比较安全，命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">firewall-cmd --zone=public --add-port=80/tcp --permanent</div><div class="line">systemctl restart firewalld.service</div></pre></td></tr></table></figure>
+<h4 id="再来个后记"><a href="#再来个后记" class="headerlink" title="再来个后记"></a>再来个后记</h4><p>不得不说写博客是个很好的习惯，这次部署新服务器有了上次的记录，很快就把新服务器部署好了。不过之前写的一周一更确实不太现实，能一月一个更就可以了吧。</p>
+]]></content>
+    </entry>
+    
+  
+  
+</search>
